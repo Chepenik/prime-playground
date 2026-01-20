@@ -1,11 +1,13 @@
 # Tasks
 
 ## Priority 1: Immediate
-- [ ] **Commit changes to git** - All MVP code is uncommitted
+- [x] **Commit changes to git** - All MVP code is uncommitted
   - Acceptance: `git status` shows clean working tree
+  - Done: Commit a6dba7e
 
-- [ ] **Update README.md** - Replace boilerplate with project description
+- [x] **Update README.md** - Replace boilerplate with project description
   - Acceptance: README describes Prime Playground features and how to run
+  - Done: README now documents all 7 features
 
 ## Priority 2: Testing
 - [ ] **Manual smoke test: Spiral** - Verify Ulam/Sacks spirals render, zoom/pan works

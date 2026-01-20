@@ -28,9 +28,10 @@
 None. MVP is complete.
 
 ### Next 3 Actions
-1. Commit all changes to git
-2. Add manual smoke tests for each feature
+1. ~~Commit all changes to git~~ Done (a6dba7e)
+2. Manual smoke tests for each feature
 3. Consider adding unit tests for prime utilities
 
 ## Session History
 - **Session 1**: Full implementation of all 7 features from plan
+- **Session 2**: Created state files, committed MVP, updated README
