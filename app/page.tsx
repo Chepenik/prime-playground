@@ -1,101 +1,133 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Circle,
+  TreeDeciduous,
+  Footprints,
+  Shield,
+  KeyRound,
+  Music,
+  Palette,
+} from "lucide-react";
 
-export default function Home() {
+const features = [
+  {
+    href: "/spiral",
+    icon: Circle,
+    title: "Prime Spiral",
+    description: "Explore Ulam and Sacks spirals revealing hidden patterns in prime distribution",
+    color: "text-violet-500",
+    bgColor: "bg-violet-500/10",
+  },
+  {
+    href: "/factorization",
+    icon: TreeDeciduous,
+    title: "Factor Tree",
+    description: "Visualize prime factorization as animated tree structures",
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+  },
+  {
+    href: "/hunt",
+    icon: Footprints,
+    title: "Prime Hunt",
+    description: "Navigate through a grid by stepping only on prime numbers",
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+  },
+  {
+    href: "/defense",
+    icon: Shield,
+    title: "Prime Defense",
+    description: "Tower defense where prime towers only damage divisible enemies",
+    color: "text-red-500",
+    bgColor: "bg-red-500/10",
+  },
+  {
+    href: "/cryptarithm",
+    icon: KeyRound,
+    title: "Cryptarithm",
+    description: "Solve word-math puzzles where letters represent digits",
+    color: "text-cyan-500",
+    bgColor: "bg-cyan-500/10",
+  },
+  {
+    href: "/soundscape",
+    icon: Music,
+    title: "Soundscape",
+    description: "Convert prime number sequences into musical compositions",
+    color: "text-pink-500",
+    bgColor: "bg-pink-500/10",
+  },
+  {
+    href: "/art",
+    icon: Palette,
+    title: "Prime Art",
+    description: "Generate beautiful art from prime number distributions",
+    color: "text-orange-500",
+    bgColor: "bg-orange-500/10",
+  },
+];
+
+export default function DashboardPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="container py-8 px-4 md:px-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">
+          Welcome to Prime Playground
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Explore the fascinating world of prime numbers through interactive
+          visualizations, games, and creative tools.
+        </p>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {features.map((feature) => (
+          <Link key={feature.href} href={feature.href}>
+            <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50 cursor-pointer">
+              <CardHeader>
+                <div
+                  className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-2`}
+                >
+                  <feature.icon className={`h-6 w-6 ${feature.color}`} />
+                </div>
+                <CardTitle className="text-xl">{feature.title}</CardTitle>
+                <CardDescription>{feature.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-12 p-6 rounded-lg border bg-card">
+        <h2 className="text-xl font-semibold mb-4">Quick Facts About Primes</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div>
+            <p className="text-3xl font-bold text-primary">2</p>
+            <p className="text-sm text-muted-foreground">
+              The only even prime number
+            </p>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-primary">25</p>
+            <p className="text-sm text-muted-foreground">
+              Primes below 100
+            </p>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-primary">Infinite</p>
+            <p className="text-sm text-muted-foreground">
+              Total count of prime numbers
+            </p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
