@@ -13,6 +13,7 @@ import {
   KeyRound,
   Music,
   Palette,
+  Globe,
 } from "lucide-react";
 
 const features = [
@@ -72,6 +73,14 @@ const features = [
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
   },
+  {
+    href: "/universe",
+    icon: Globe,
+    title: "3D Universe",
+    description: "Explore primes in an interactive 3D Ulam spiral with orbit controls",
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+  },
 ];
 
 export default function DashboardPage() {
@@ -87,41 +96,43 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <Link key={feature.href} href={feature.href}>
-            <Card className="h-full transition-all hover:shadow-lg hover:border-primary/50 cursor-pointer">
-              <CardHeader>
+            <Card className="group h-full transition-all duration-200 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30 hover:-translate-y-1 cursor-pointer">
+              <CardHeader className="space-y-3">
                 <div
-                  className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-2`}
+                  className={`w-14 h-14 rounded-xl ${feature.bgColor} flex items-center justify-center transition-transform group-hover:scale-110`}
                 >
-                  <feature.icon className={`h-6 w-6 ${feature.color}`} />
+                  <feature.icon className={`h-7 w-7 ${feature.color}`} />
                 </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
+                <div className="space-y-1.5">
+                  <CardTitle className="text-lg font-semibold">{feature.title}</CardTitle>
+                  <CardDescription className="text-sm leading-relaxed">{feature.description}</CardDescription>
+                </div>
               </CardHeader>
             </Card>
           </Link>
         ))}
       </div>
 
-      <div className="mt-12 p-6 rounded-lg border bg-card">
-        <h2 className="text-xl font-semibold mb-4">Quick Facts About Primes</h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <p className="text-3xl font-bold text-primary">2</p>
+      <div className="mt-12 p-6 rounded-xl border bg-gradient-to-br from-card to-primary/5">
+        <h2 className="text-lg font-semibold mb-5 text-muted-foreground">Quick Facts About Primes</h2>
+        <div className="grid gap-6 sm:grid-cols-3">
+          <div className="space-y-1">
+            <p className="text-4xl font-bold text-primary font-mono">2</p>
             <p className="text-sm text-muted-foreground">
               The only even prime number
             </p>
           </div>
-          <div>
-            <p className="text-3xl font-bold text-primary">25</p>
+          <div className="space-y-1">
+            <p className="text-4xl font-bold text-primary font-mono">25</p>
             <p className="text-sm text-muted-foreground">
               Primes below 100
             </p>
           </div>
-          <div>
-            <p className="text-3xl font-bold text-primary">Infinite</p>
+          <div className="space-y-1">
+            <p className="text-4xl font-bold text-primary">Infinite</p>
             <p className="text-sm text-muted-foreground">
               Total count of prime numbers
             </p>

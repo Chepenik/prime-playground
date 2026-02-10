@@ -18,8 +18,22 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Prime Playground",
+  title: {
+    default: "Prime Playground",
+    template: "%s | Prime Playground",
+  },
   description: "Explore the fascinating world of prime numbers through interactive visualizations, games, and creative tools",
+  openGraph: {
+    title: "Prime Playground",
+    description: "8 interactive prime number experiences — spirals, games, music, 3D, and more",
+    type: "website",
+    siteName: "Prime Playground",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Prime Playground",
+    description: "8 interactive prime number experiences — spirals, games, music, 3D, and more",
+  },
 };
 
 export default function RootLayout({

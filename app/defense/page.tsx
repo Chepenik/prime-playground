@@ -17,6 +17,7 @@ import {
   Skull,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OnboardingTooltip } from "@/components/onboarding-tooltip";
 
 const TOWER_PRIMES = [2, 3, 5, 7, 11, 13] as const;
 
@@ -37,6 +38,8 @@ export default function DefensePage() {
     selectedTowerPrime,
     gridSize,
     cellSize,
+    highestWave,
+    bestLivesRemaining,
     initGame,
     placeTower,
     selectTowerPrime,
@@ -44,7 +47,12 @@ export default function DefensePage() {
     updateGame,
     removeTower,
     resetGame,
+    loadProgress,
   } = useDefenseStore();
+
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress]);
 
   // Game loop
   useEffect(() => {
@@ -212,6 +220,26 @@ export default function DefensePage() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         <Card className="relative overflow-hidden">
+          <OnboardingTooltip
+            featureKey="defense"
+            steps={[
+              {
+                title: "Prime Tower Defense",
+                content: "Place towers using prime numbers to defend against enemies walking the path.",
+                position: "top-right",
+              },
+              {
+                title: "The Divisibility Mechanic",
+                content: "This is the key: a tower with prime P can ONLY damage enemies whose HP is divisible by P. Tower 7 hits enemies with HP 14, 21, 35, etc. You need diverse primes!",
+                position: "top-right",
+              },
+              {
+                title: "Strategy Tips",
+                content: "Tower 2 hits any even-HP enemy (most common). Tower 3 and 5 cover many others. Higher primes are niche but powerful. Mix your towers for full coverage!",
+                position: "top-right",
+              },
+            ]}
+          />
           <CardContent className="p-4">
             {gameStatus === "idle" ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-6">
@@ -406,6 +434,26 @@ export default function DefensePage() {
               })}
             </CardContent>
           </Card>
+
+          {highestWave > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Best Records</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Highest Wave</span>
+                  <span className="font-bold font-mono">{highestWave}/10</span>
+                </div>
+                {bestLivesRemaining > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Best Finish</span>
+                    <span className="font-bold font-mono">{bestLivesRemaining} lives</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader className="pb-3">

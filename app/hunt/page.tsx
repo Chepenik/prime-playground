@@ -18,6 +18,7 @@ import {
   Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OnboardingTooltip } from "@/components/onboarding-tooltip";
 
 export default function HuntPage() {
   const {
@@ -26,10 +27,20 @@ export default function HuntPage() {
     score,
     level,
     gameStatus,
+    lastWrongMove,
+    highScore,
+    highestLevel,
     initGame,
     movePlayer,
     resetGame,
+    clearWrongMove,
+    loadProgress,
   } = useHuntStore();
+
+  // Load persisted progress on mount
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress]);
 
   // Handle keyboard input
   const handleKeyDown = useCallback(
@@ -71,6 +82,16 @@ export default function HuntPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // Clear wrong move indicator after animation
+  useEffect(() => {
+    if (lastWrongMove) {
+      const timer = setTimeout(() => {
+        clearWrongMove();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [lastWrongMove, clearWrongMove]);
+
   const handleNextLevel = () => {
     initGame(level + 1);
   };
@@ -90,7 +111,27 @@ export default function HuntPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <Card>
+        <Card className="relative overflow-hidden">
+          <OnboardingTooltip
+            featureKey="hunt"
+            steps={[
+              {
+                title: "Welcome to Prime Hunt!",
+                content: "Navigate the grid by stepping only on prime numbers. Use arrow keys or WASD to move.",
+                position: "top-left",
+              },
+              {
+                title: "Watch Your Lives",
+                content: "You have 3 lives. Stepping on a composite (non-prime) number costs a life. Lose all 3 and it's game over!",
+                position: "top-left",
+              },
+              {
+                title: "Reach the Goal",
+                content: "Find a path of primes from your starting position to the gold target. Every grid is guaranteed to have at least one valid path.",
+                position: "top-left",
+              },
+            ]}
+          />
           <CardContent className="p-4 sm:p-6">
             {gameStatus === "idle" ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-6">
@@ -142,36 +183,43 @@ export default function HuntPage() {
                     }}
                   >
                     {grid.map((row, rowIndex) =>
-                      row.map((cell, colIndex) => (
-                        <motion.div
-                          key={`${rowIndex}-${colIndex}`}
-                          className={cn(
-                            "w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-md text-sm sm:text-base font-bold border-2 transition-colors",
-                            cell.isPlayer
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : cell.isGoal
-                              ? "bg-amber-500 text-white border-amber-500"
-                              : cell.visited
-                              ? "bg-muted text-muted-foreground border-muted"
-                              : cell.isPrime
-                              ? "bg-prime/20 text-prime border-prime/50 hover:bg-prime/30"
-                              : "bg-secondary/50 text-secondary-foreground border-secondary hover:bg-secondary"
-                          )}
-                          whileHover={
-                            !cell.isPlayer && !cell.visited
-                              ? { scale: 1.05 }
-                              : {}
-                          }
-                        >
-                          {cell.isPlayer ? (
-                            <div className="w-6 h-6 rounded-full bg-primary-foreground" />
-                          ) : cell.isGoal ? (
-                            <Target className="h-6 w-6" />
-                          ) : (
-                            cell.value
-                          )}
-                        </motion.div>
-                      ))
+                      row.map((cell, colIndex) => {
+                        const isWrongMove = lastWrongMove?.row === rowIndex && lastWrongMove?.col === colIndex;
+                        return (
+                          <motion.div
+                            key={`${rowIndex}-${colIndex}`}
+                            className={cn(
+                              "w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-md text-sm sm:text-base font-bold border-2 transition-colors",
+                              cell.isPlayer
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : cell.isGoal
+                                ? "bg-amber-500 text-white border-amber-500"
+                                : cell.visited
+                                ? "bg-muted text-muted-foreground border-muted"
+                                : isWrongMove
+                                ? "bg-destructive/80 text-destructive-foreground border-destructive"
+                                : cell.isPrime
+                                ? "bg-prime/20 text-prime border-prime/50 hover:bg-prime/30"
+                                : "bg-secondary/50 text-secondary-foreground border-secondary hover:bg-secondary"
+                            )}
+                            animate={isWrongMove ? { x: [0, -4, 4, -4, 4, 0] } : {}}
+                            transition={{ duration: 0.4 }}
+                            whileHover={
+                              !cell.isPlayer && !cell.visited
+                                ? { scale: 1.05 }
+                                : {}
+                            }
+                          >
+                            {cell.isPlayer ? (
+                              <div className="w-6 h-6 rounded-full bg-primary-foreground" />
+                            ) : cell.isGoal ? (
+                              <Target className="h-6 w-6" />
+                            ) : (
+                              cell.value
+                            )}
+                          </motion.div>
+                        );
+                      })
                     )}
                   </div>
                 </div>
@@ -325,6 +373,24 @@ export default function HuntPage() {
               </div>
             </CardContent>
           </Card>
+
+          {(highScore > 0 || highestLevel > 0) && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Best Records</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">High Score</span>
+                  <span className="font-bold font-mono">{highScore}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Highest Level</span>
+                  <span className="font-bold font-mono">{highestLevel}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader className="pb-3">

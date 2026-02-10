@@ -11,6 +11,7 @@ import {
   KeyRound,
   Music,
   Palette,
+  Globe,
   Home,
 } from "lucide-react";
 
@@ -23,14 +24,15 @@ const navItems = [
   { href: "/cryptarithm", icon: KeyRound, label: "Cryptarithm" },
   { href: "/soundscape", icon: Music, label: "Soundscape" },
   { href: "/art", icon: Palette, label: "Prime Art" },
+  { href: "/universe", icon: Globe, label: "3D Universe" },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col border-r bg-background">
-      <nav className="flex-1 space-y-1 p-4">
+    <aside className="hidden lg:flex w-64 flex-col border-r bg-muted/30">
+      <nav className="flex-1 space-y-1 p-3">
         {navItems.map((item) => {
           const isActive =
             item.href === "/"
@@ -41,13 +43,13 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                 isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className={cn("h-4 w-4", isActive && "text-primary-foreground")} />
               {item.label}
             </Link>
           );

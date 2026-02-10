@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { CryptarithmPuzzle } from "@/types";
-import { isPrime } from "@/lib/prime";
+import { loadCryptarithmProgress, saveCryptarithmProgress } from "@/lib/persistence";
 
 const PUZZLES: CryptarithmPuzzle[] = [
   {
@@ -37,10 +37,10 @@ const PUZZLES: CryptarithmPuzzle[] = [
   },
   {
     id: "5",
-    words: ["PRIME"],
+    words: ["AB", "BA"],
     operator: "+",
-    result: "PRIME",
-    hint: "P + P = P only works with specific digits",
+    result: "CDC",
+    hint: "Try making the sum just over 100",
     difficulty: "easy",
   },
   {
@@ -93,6 +93,7 @@ interface CryptarithmState {
   hintsUsed: number;
   showHint: boolean;
   totalSolved: number;
+  solvedPuzzleIds: string[];
 
   loadPuzzle: (index: number) => void;
   nextPuzzle: () => void;
@@ -100,6 +101,8 @@ interface CryptarithmState {
   checkSolution: () => boolean;
   toggleHint: () => void;
   resetPuzzle: () => void;
+  loadProgress: () => void;
+  completionPercent: () => number;
 }
 
 function getUniqueLetters(puzzle: CryptarithmPuzzle): string[] {
@@ -125,6 +128,7 @@ export const useCryptarithmStore = create<CryptarithmState>((set, get) => ({
   hintsUsed: 0,
   showHint: false,
   totalSolved: 0,
+  solvedPuzzleIds: [],
 
   loadPuzzle: (index) => {
     const puzzle = PUZZLES[index % PUZZLES.length];
@@ -221,9 +225,16 @@ export const useCryptarithmStore = create<CryptarithmState>((set, get) => ({
     const solved = computed === resultValue;
 
     if (solved) {
+      const puzzleId = state.currentPuzzle!.id;
+      const alreadySolved = state.solvedPuzzleIds.includes(puzzleId);
+      const newSolvedIds = alreadySolved
+        ? state.solvedPuzzleIds
+        : [...state.solvedPuzzleIds, puzzleId];
+      saveCryptarithmProgress({ solvedPuzzleIds: newSolvedIds });
       set({
         isSolved: true,
-        totalSolved: state.totalSolved + 1,
+        totalSolved: alreadySolved ? state.totalSolved : state.totalSolved + 1,
+        solvedPuzzleIds: newSolvedIds,
       });
     }
 
@@ -255,6 +266,18 @@ export const useCryptarithmStore = create<CryptarithmState>((set, get) => ({
         showHint: false,
       });
     }
+  },
+
+  loadProgress: () => {
+    const progress = loadCryptarithmProgress();
+    set({
+      solvedPuzzleIds: progress.solvedPuzzleIds,
+      totalSolved: progress.solvedPuzzleIds.length,
+    });
+  },
+
+  completionPercent: () => {
+    return Math.round((get().solvedPuzzleIds.length / PUZZLES.length) * 100);
   },
 }));
 

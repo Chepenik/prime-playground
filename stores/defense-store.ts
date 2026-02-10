@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Tower, Enemy } from "@/types";
+import { loadDefenseProgress, saveDefenseProgress } from "@/lib/persistence";
 
 const GRID_SIZE = 15;
 const CELL_SIZE = 40;
@@ -59,6 +60,9 @@ interface DefenseState {
   gridSize: number;
   cellSize: number;
 
+  highestWave: number;
+  bestLivesRemaining: number;
+
   initGame: () => void;
   placeTower: (x: number, y: number) => boolean;
   selectTowerPrime: (prime: number | null) => void;
@@ -66,6 +70,7 @@ interface DefenseState {
   updateGame: (deltaTime: number) => void;
   removeTower: (id: string) => void;
   resetGame: () => void;
+  loadProgress: () => void;
 }
 
 export const useDefenseStore = create<DefenseState>((set, get) => ({
@@ -80,6 +85,8 @@ export const useDefenseStore = create<DefenseState>((set, get) => ({
   selectedTowerPrime: null,
   gridSize: GRID_SIZE,
   cellSize: CELL_SIZE,
+  highestWave: 0,
+  bestLivesRemaining: 0,
 
   initGame: () => {
     set({
@@ -254,6 +261,26 @@ export const useDefenseStore = create<DefenseState>((set, get) => ({
       }
     }
 
+    // Persist progress when wave ends or game ends
+    if (newGameStatus === "won" || newGameStatus === "lost" || (!newWaveInProgress && state.waveInProgress)) {
+      const newHighestWave = Math.max(state.highestWave, state.wave);
+      const newBestLives = newGameStatus === "won"
+        ? Math.max(state.bestLivesRemaining, newLives)
+        : state.bestLivesRemaining;
+      saveDefenseProgress({ highestWave: newHighestWave, bestLivesRemaining: newBestLives });
+      set({
+        enemies: newEnemies,
+        towers: newTowers,
+        lives: newLives,
+        money: newMoney,
+        gameStatus: newGameStatus,
+        waveInProgress: newWaveInProgress,
+        highestWave: newHighestWave,
+        bestLivesRemaining: newBestLives,
+      });
+      return;
+    }
+
     set({
       enemies: newEnemies,
       towers: newTowers,
@@ -289,6 +316,11 @@ export const useDefenseStore = create<DefenseState>((set, get) => ({
       gameStatus: "idle",
       selectedTowerPrime: null,
     });
+  },
+
+  loadProgress: () => {
+    const progress = loadDefenseProgress();
+    set({ highestWave: progress.highestWave, bestLivesRemaining: progress.bestLivesRemaining });
   },
 }));
 

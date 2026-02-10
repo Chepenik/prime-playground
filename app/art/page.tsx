@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Shuffle } from "lucide-react";
+import { Download, Shuffle, Save, Trash2 } from "lucide-react";
 
 export default function ArtPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,6 +33,7 @@ export default function ArtPage() {
     speed,
     primeCount,
     showNumbers,
+    savedPresets,
     setMode,
     setColorScheme,
     setDensity,
@@ -41,7 +42,15 @@ export default function ArtPage() {
     setSpeed,
     setPrimeCount,
     randomize,
+    savePreset,
+    loadPreset,
+    deletePreset,
+    loadGallery,
   } = useArtStore();
+
+  useEffect(() => {
+    loadGallery();
+  }, [loadGallery]);
 
   // Generate primes
   const primes = useMemo(() => {
@@ -410,6 +419,49 @@ export default function ArtPage() {
               Export PNG
             </Button>
           </div>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              const name = `${mode} - ${colorScheme} #${seed}`;
+              savePreset(name);
+            }}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save Preset
+          </Button>
+
+          {savedPresets.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Saved Presets</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 max-h-64 overflow-y-auto">
+                {savedPresets.map((preset) => (
+                  <div
+                    key={preset.id}
+                    className="flex items-center justify-between p-2 rounded border text-sm hover:bg-accent cursor-pointer group"
+                  >
+                    <button
+                      className="text-left flex-1 truncate"
+                      onClick={() => loadPreset(preset)}
+                    >
+                      <span className="font-medium">{preset.name}</span>
+                    </button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 text-destructive"
+                      onClick={() => deletePreset(preset.id)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

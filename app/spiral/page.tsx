@@ -16,6 +16,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { OnboardingTooltip } from "@/components/onboarding-tooltip";
 
 export default function SpiralPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -187,6 +188,26 @@ export default function SpiralPage() {
           ref={containerRef}
           className="relative rounded-lg border bg-card overflow-hidden"
         >
+          <OnboardingTooltip
+            featureKey="spiral"
+            steps={[
+              {
+                title: "The Ulam Spiral",
+                content: "Numbers are arranged in a square spiral starting from the center. Prime numbers are highlighted — notice how they cluster along diagonal lines!",
+                position: "top-right",
+              },
+              {
+                title: "Why Diagonals?",
+                content: "The diagonal patterns appear because many prime-generating polynomials (like n\u00B2 + n + 41) produce values that align diagonally in the spiral. This was discovered by Stanislaw Ulam in 1963 while doodling in a boring meeting!",
+                position: "top-right",
+              },
+              {
+                title: "Explore Further",
+                content: "Drag to pan, scroll to zoom. Try switching to the Sacks spiral for a polar view, or toggle twin prime highlighting to see paired primes.",
+                position: "top-right",
+              },
+            ]}
+          />
           <canvas
             ref={canvasRef}
             className="cursor-grab active:cursor-grabbing"

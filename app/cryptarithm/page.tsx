@@ -25,16 +25,23 @@ export default function CryptarithmPage() {
     hintsUsed,
     showHint,
     totalSolved,
+    solvedPuzzleIds,
     loadPuzzle,
     nextPuzzle,
     setLetterValue,
     checkSolution,
     toggleHint,
     resetPuzzle,
+    loadProgress,
+    completionPercent,
   } = useCryptarithmStore();
 
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    loadProgress();
+  }, [loadProgress]);
 
   useEffect(() => {
     if (!currentPuzzle) {
@@ -300,10 +307,20 @@ export default function CryptarithmPage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Stats</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
+            <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Puzzles Solved</span>
-                <span className="font-bold">{totalSolved}</span>
+                <span className="font-bold">{totalSolved} / {PUZZLES.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Completion</span>
+                <span className="font-bold">{completionPercent()}%</span>
+              </div>
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div
+                  className="bg-prime h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${completionPercent()}%` }}
+                />
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Hints Used</span>
@@ -338,17 +355,20 @@ export default function CryptarithmPage() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {PUZZLES.map((_, i) => (
-                  <Button
-                    key={i}
-                    variant={i === puzzleIndex ? "default" : "outline"}
-                    size="sm"
-                    className="w-9 h-9"
-                    onClick={() => loadPuzzle(i)}
-                  >
-                    {i + 1}
-                  </Button>
-                ))}
+                {PUZZLES.map((puzzle, i) => {
+                  const solved = solvedPuzzleIds.includes(puzzle.id);
+                  return (
+                    <Button
+                      key={i}
+                      variant={i === puzzleIndex ? "default" : solved ? "secondary" : "outline"}
+                      size="sm"
+                      className={cn("w-9 h-9", solved && i !== puzzleIndex && "border-prime/50 text-prime")}
+                      onClick={() => loadPuzzle(i)}
+                    >
+                      {solved ? <Check className="h-3 w-3" /> : i + 1}
+                    </Button>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { loadArtGallery, saveArtGallery, type ArtPreset } from "@/lib/persistence";
 
 interface ArtState {
   mode: "spiral" | "particles" | "waves" | "mandala";
@@ -19,6 +20,11 @@ interface ArtState {
   setPrimeCount: (count: number) => void;
   setShowNumbers: (show: boolean) => void;
   randomize: () => void;
+  savedPresets: ArtPreset[];
+  savePreset: (name: string) => void;
+  loadPreset: (preset: ArtPreset) => void;
+  deletePreset: (id: string) => void;
+  loadGallery: () => void;
 }
 
 export const COLOR_SCHEMES: Record<string, string[]> = {
@@ -41,6 +47,7 @@ export const useArtStore = create<ArtState>((set, get) => ({
   speed: 1,
   primeCount: 1000,
   showNumbers: false,
+  savedPresets: [],
 
   setMode: (mode) => set({ mode }),
   setColorScheme: (colorScheme) => set({ colorScheme }),
@@ -67,5 +74,46 @@ export const useArtStore = create<ArtState>((set, get) => ({
       seed: Math.floor(Math.random() * 10000),
       speed: Math.random() * 2 + 0.5,
     });
+  },
+
+  savePreset: (name: string) => {
+    const state = get();
+    const preset: ArtPreset = {
+      id: `preset-${Date.now()}`,
+      name,
+      mode: state.mode,
+      colorScheme: state.colorScheme,
+      density: state.density,
+      seed: state.seed,
+      speed: state.speed,
+      primeCount: state.primeCount,
+      createdAt: Date.now(),
+    };
+    const newPresets = [...state.savedPresets, preset];
+    saveArtGallery({ presets: newPresets });
+    set({ savedPresets: newPresets });
+  },
+
+  loadPreset: (preset: ArtPreset) => {
+    set({
+      mode: preset.mode as "spiral" | "particles" | "waves" | "mandala",
+      colorScheme: preset.colorScheme,
+      density: preset.density,
+      seed: preset.seed,
+      speed: preset.speed,
+      primeCount: preset.primeCount,
+    });
+  },
+
+  deletePreset: (id: string) => {
+    const state = get();
+    const newPresets = state.savedPresets.filter((p) => p.id !== id);
+    saveArtGallery({ presets: newPresets });
+    set({ savedPresets: newPresets });
+  },
+
+  loadGallery: () => {
+    const gallery = loadArtGallery();
+    set({ savedPresets: gallery.presets });
   },
 }));
